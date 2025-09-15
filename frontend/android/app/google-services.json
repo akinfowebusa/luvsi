@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "480828489966",
+    "project_id": "luvsi-2497a",
+    "storage_bucket": "luvsi-2497a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:480828489966:android:76b293f75a3df7714833ff",
+        "android_client_info": {
+          "package_name": "com.asif.luvsi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB41qwQSEhPRKmqiR3fY-b6jTI3DFosstM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
