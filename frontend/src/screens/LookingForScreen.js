@@ -44,7 +44,7 @@ const LookingForScreen = ({ navigation }) => {
       console.log("✅ LookingFor stored locally:", selectedOptions);
 
       // ✅ Navigate to next screen
-      navigation.navigate('UserProfileScreen', { selectedOptions });
+      navigation.navigate('AddPhotosScreen', { selectedOptions });
 
     } catch (error) {
       console.error("❌ Storage Error:", error.message);
@@ -61,7 +61,7 @@ const LookingForScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('EducationScreen')}>
           <Text style={styles.backArrow}>{"<"}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('UserProfileScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('AddPhotosScreen')}>
           <Text style={styles.skip}>Skip</Text>
         </TouchableOpacity>
       </View>

@@ -1,14 +1,42 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, Platform, Linking } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { request, PERMISSIONS, RESULTS } from "react-native-permissions";
 
 const LocationPermissionScreen = () => {
   const navigation = useNavigation();
 
-  const handleEnableLocation = () => {
-    // 👉 yaha pe location permission logic add karna hoga
-    navigation.navigate("NextScreen"); // next page navigation
+  const handleEnableLocation = async () => {
+    try {
+      // Step 1: Request location permission
+      let result;
+      if (Platform.OS === "ios") {
+        result = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      } else {
+        result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+      }
+
+      if (result === RESULTS.GRANTED) {
+        // ✅ Permission granted, navigate forward
+        navigation.navigate("FavouritePlacesScreen");
+      } else if (result === RESULTS.DENIED) {
+        Alert.alert("Permission Denied", "Please enable location to continue.");
+      } else if (result === RESULTS.BLOCKED) {
+        Alert.alert(
+          "Permission Blocked",
+          "Go to settings and enable location permission manually.",
+          [
+            {
+              text: "Open Settings",
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+      }
+    } catch (error) {
+      console.error("❌ Location Permission Error:", error);
+    }
   };
 
   return (
@@ -16,14 +44,14 @@ const LocationPermissionScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={24} color="#000" />
+          <Text style={styles.backArrow}>{"<"}</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Image Section */}
+      {/* Image */}
       <View style={styles.imageWrapper}>
         <Image
-          source={require("../assets/locationBanner.jpg")} // apna banner image yaha daalna
+          source={require("../assets/locationBanner.jpg")}
           style={styles.banner}
           resizeMode="cover"
         />
@@ -37,7 +65,7 @@ const LocationPermissionScreen = () => {
         real-time location.
       </Text>
 
-      {/* Footer Buttons */}
+      {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.continueButton}
@@ -58,64 +86,16 @@ const LocationPermissionScreen = () => {
 export default LocationPermissionScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FAF4EF", // ✅ Same pinkish background
-    paddingHorizontal: 20,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 15,
-  },
-  imageWrapper: {
-    alignItems: "center",
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  banner: {
-    width: "100%",
-    height: 160,
-    borderRadius: 16,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "#000",
-    marginBottom: 12,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#8E8E8E",
-    marginBottom: 30,
-  },
-  footer: {
-    position: "absolute",
-    bottom: 40,
-    left: 20,
-    right: 20,
-    alignItems: "center",
-  },
-  continueButton: {
-    backgroundColor: "#F06292", // ✅ Pink button
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    width: "100%",
-    marginBottom: 15,
-  },
-  continueText: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  privacyWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  privacyText: {
-    fontSize: 15,
-    color: "#000",
-    fontWeight: "500",
-  },
+  container: { flex: 1, backgroundColor: "#FAF4EF", paddingHorizontal: 20 },
+  header: { flexDirection: "row", alignItems: "center", marginVertical: 15 },
+  backArrow: { fontSize: 22, color: "#000" },
+  imageWrapper: { alignItems: "center", marginTop: 20, marginBottom: 20 },
+  banner: { width: "100%", height: 160, borderRadius: 16 },
+  title: { fontSize: 26, fontWeight: "bold", color: "#000", marginBottom: 12 },
+  subtitle: { fontSize: 16, color: "#8E8E8E", marginBottom: 30 },
+  footer: { position: "absolute", bottom: 40, left: 20, right: 20, alignItems: "center" },
+  continueButton: { backgroundColor: "#F06292", paddingVertical: 15, borderRadius: 10, alignItems: "center", width: "100%", marginBottom: 15 },
+  continueText: { color: "#FFF", fontSize: 18, fontWeight: "bold" },
+  privacyWrapper: { flexDirection: "row", alignItems: "center" },
+  privacyText: { fontSize: 15, color: "#000", fontWeight: "500" },
 });

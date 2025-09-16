@@ -6,10 +6,13 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
-  View
+  View,
+  Dimensions // Import Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { setItem } from '../utils/storage';
+
+const screenHeight = Dimensions.get('window').height; // Get screen height
 
 const HeightScreen = ({ navigation }) => {
   const [height, setHeight] = useState('');
@@ -71,13 +74,17 @@ const HeightScreen = ({ navigation }) => {
           onChangeText={handleChangeText}
           keyboardType="numeric"
           maxLength={3}
+          accessibilityLabel="Enter your height in centimeters" // Added accessibility label
         />
       </View>
 
       {/* Button fixed at bottom */}
-      <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-        <Text style={styles.continueText}>Continue</Text>
-      </TouchableOpacity>
+      {/* Adjusted button positioning for better responsiveness */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
+          <Text style={styles.continueText}>Continue</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -108,13 +115,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     width: '90%',
   },
-
+  buttonContainer: {
+    // Container to help position the button at the bottom
+    paddingBottom: screenHeight * 0.05, // 5% of screen height from the bottom
+  },
   continueButton: {
     backgroundColor: '#F06292',
     padding: 15,
     borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 500,  // safe spacing from bottom
+    width: '100%', // Take full width within its container
   },
   continueText: { color: '#fff', fontSize: 16, fontWeight: 'bold' }
 });

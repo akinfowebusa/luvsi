@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { setItem, getItem } from '../utils/storage'; // 👈 AsyncStorage utils
+import { setItem, getItem } from '../utils/storage';
 
 const DateOfBirthScreen = ({ navigation }) => {
   const [dateOfBirth, setDateOfBirth] = useState(null);
@@ -28,11 +28,35 @@ const DateOfBirthScreen = ({ navigation }) => {
   const parseDate = (text) => {
     const parts = text.split("-");
     if (parts.length === 3) {
-      const [day, month, year] = parts;
+      const [day, month, year] = parts.map(part => parseInt(part, 10));
+
+      if (day > 31 || month > 12) {
+        return null;
+      }
+
       const parsed = new Date(`${year}-${month}-${day}`);
       return isNaN(parsed.getTime()) ? null : parsed;
     }
     return null;
+  };
+
+  const handleDateChange = (text) => {
+    // Remove all non-numeric characters
+    const cleanText = text.replace(/[^0-9]/g, '');
+
+    // Add hyphens automatically
+    let formattedText = '';
+    if (cleanText.length > 0) {
+      formattedText += cleanText.substring(0, 2);
+    }
+    if (cleanText.length > 2) {
+      formattedText += '-' + cleanText.substring(2, 4);
+    }
+    if (cleanText.length > 4) {
+      formattedText += '-' + cleanText.substring(4, 8);
+    }
+    
+    setDobInput(formattedText);
   };
 
   const handleContinue = async () => {
@@ -43,19 +67,15 @@ const DateOfBirthScreen = ({ navigation }) => {
     }
 
     if (!finalDate) {
-      Alert.alert('Validation Error', 'Please select or enter a valid date of birth.');
+      Alert.alert('Validation Error', 'Please select or enter a valid date of birth. (DD-MM-YYYY, max day: 31, max month: 12)');
       return;
     }
 
     try {
-      await setItem('DateOfBirth', finalDate.toISOString());
-      console.log("✅ Date of Birth stored successfully:", finalDate.toISOString());
-
-      const storedDob = await getItem('DateOfBirth');
-      console.log("📦 Retrieved from AsyncStorage:", storedDob);
-
-      navigation.navigate('GenderScreen', { dateOfBirth: finalDate });
-
+      const dobString = finalDate.toISOString();
+      await setItem('DateOfBirth', dobString);
+      console.log("✅ Date of Birth stored successfully:", dobString);
+      navigation.navigate('GenderScreen', { dateOfBirth: dobString });
     } catch (error) {
       console.error('❌ Error saving Date of Birth:', error);
       Alert.alert("Error", "Failed to save date of birth. Try again!");
@@ -74,22 +94,19 @@ const DateOfBirthScreen = ({ navigation }) => {
     <SafeAreaView style={styles.pageContainer}>
       <StatusBar barStyle="dark-content" />
 
-      {/* Decorative Image */}
       <Image
         source={{ uri: 'https://i.ibb.co/0rJZzZx/heart.png' }}
         style={styles.heartIcon}
       />
 
-      {/* Heading */}
       <Text style={styles.heading}>What is your Date of Birth?</Text>
 
-      {/* Date Input with Calendar Icon */}
       <View style={styles.inputWrapper}>
         <TextInput
           style={styles.input}
           placeholder="DD-MM-YYYY"
           value={dobInput}
-          onChangeText={(text) => setDobInput(text)}
+          onChangeText={handleDateChange}
           keyboardType="numeric"
           maxLength={10}
         />
@@ -101,7 +118,6 @@ const DateOfBirthScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Show Date Picker */}
       {showPicker && (
         <DateTimePicker
           value={dateOfBirth || new Date(2000, 0, 1)}
@@ -112,7 +128,6 @@ const DateOfBirthScreen = ({ navigation }) => {
         />
       )}
 
-      {/* Continue Button */}
       <TouchableOpacity
         style={styles.button}
         onPress={handleContinue}

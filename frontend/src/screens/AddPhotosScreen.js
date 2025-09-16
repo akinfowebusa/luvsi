@@ -7,26 +7,52 @@ import {
   Image,
   Alert,
   ScrollView,
+  Platform,
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { PERMISSIONS, request } from 'react-native-permissions';
 
 const AddPhotosScreen = ({ navigation }) => {
   const [photos, setPhotos] = useState([]);
 
-  const pickImage = () => {
-    if (photos.length >= 6) {
-      Alert.alert("Limit reached", "You can upload maximum 6 photos.");
+  // Request storage/photo permission safely
+  const requestStoragePermission = async () => {
+    try {
+      const permission =
+        Platform.OS === 'android'
+          ? PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
+          : PERMISSIONS.IOS.PHOTO_LIBRARY;
+
+      const result = await request(permission);
+      return result === 'granted';
+    } catch (err) {
+      console.warn('Permission error', err);
+      return false;
+    }
+  };
+
+  const pickImage = async () => {
+    // Request permission on button press
+    const granted = await requestStoragePermission();
+    if (!granted) {
+      Alert.alert('Permission required', 'App needs access to your photos.');
       return;
     }
 
+    if (photos.length >= 6) {
+      Alert.alert('Limit reached', 'You can upload maximum 6 photos.');
+      return;
+    }
+
+    // Launch image picker
     launchImageLibrary(
       { mediaType: 'photo', quality: 1, selectionLimit: 1 },
       (response) => {
         if (response.didCancel) {
-          console.log("User cancelled image picker");
+          console.log('User cancelled image picker');
         } else if (response.errorMessage) {
-          console.log("Image Picker Error: ", response.errorMessage);
-        } else {
+          console.log('Image Picker Error: ', response.errorMessage);
+        } else if (response.assets && response.assets.length > 0) {
           const uri = response.assets[0].uri;
           setPhotos([...photos, uri]);
         }
@@ -36,11 +62,10 @@ const AddPhotosScreen = ({ navigation }) => {
 
   const handleContinue = () => {
     if (photos.length < 2) {
-      Alert.alert("Minimum photos", "Please add at least 2 photos.");
+      Alert.alert('Minimum photos', 'Please add at least 2 photos.');
       return;
     }
-    // Navigate to next screen
-    navigation.navigate("FindCrushScreen", { photos });
+    navigation.navigate('FindCrushScreen', { photos });
   };
 
   return (
@@ -76,13 +101,13 @@ const AddPhotosScreen = ({ navigation }) => {
       </View>
 
       {/* Tip */}
-      <Text style={styles.tip}>🌟 How to choose the perfect picture </Text>
+      <Text style={styles.tip}>🌟 How to choose the perfect picture</Text>
 
       {/* Continue Button */}
       <TouchableOpacity
         style={[
           styles.continueButton,
-          photos.length < 2 && { backgroundColor: "#B0A9A9" },
+          photos.length < 2 && { backgroundColor: '#B0A9A9' },
         ]}
         onPress={handleContinue}
         disabled={photos.length < 2}
@@ -96,7 +121,7 @@ const AddPhotosScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FDF6F0",
+    backgroundColor: '#FDF6F0',
     padding: 20,
   },
   header: {
@@ -104,58 +129,58 @@ const styles = StyleSheet.create({
   },
   backArrow: {
     fontSize: 28,
-    color: "#000",
+    color: '#000',
   },
   title: {
     fontSize: 26,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 5,
-    color: "#000",
+    color: '#000',
   },
   subtitle: {
     fontSize: 16,
-    color: "#666",
+    color: '#666',
     marginBottom: 20,
   },
   grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   photoBox: {
-    width: "30%",
+    width: '30%',
     height: 100,
-    backgroundColor: "#EFEFEF",
+    backgroundColor: '#EFEFEF',
     borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 15,
   },
   plus: {
     fontSize: 28,
-    color: "#999",
+    color: '#999',
   },
   photo: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: 10,
   },
   tip: {
     marginTop: 10,
     fontSize: 14,
-    color: "#555",
+    color: '#555',
   },
   continueButton: {
     marginTop: 20,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
     paddingVertical: 15,
     borderRadius: 10,
-    alignItems: "center",
+    alignItems: 'center',
   },
   continueText: {
-    color: "#FFF",
+    color: '#FFF',
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });
 

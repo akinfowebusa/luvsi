@@ -115,6 +115,9 @@ import FavouritePlacesScreen from './src/screens/FavouritePlaceScreen';
 import PersonalityScreen from './src/screens/PersonalityScreen';
 import UserProfileScreen from './src/screens/UserProfileScreen';
 import ProfileDashboard from './src/screens/ProfileDashboard';
+import ExerciseScreen from './src/screens/ExerciseScreen';
+import SmokeScreen from './src/screens/SmokeScreen';
+import KidScreen from './src/screens/KidScreen';
 
 // ✅ Create Stack
 const Stack = createStackNavigator();
@@ -135,6 +138,9 @@ export default function App() {
         <Stack.Screen name="HeightScreen" component={HeightScreen} />
         <Stack.Screen name="SignScreen" component={SignScreen} />
         <Stack.Screen name="EducationScreen" component={EducationScreen} />
+        <Stack.Screen name="ExerciseScreen" component={ExerciseScreen} />
+        <Stack.Screen name="SmokeScreen" component={SmokeScreen} />
+        <Stack.Screen name="KidScreen" component={KidScreen} />
 
         {/* Screens with header hidden */}
         <Stack.Screen name="PleasureScreen" component={PleasureScreen} options={{ headerShown: false }} />

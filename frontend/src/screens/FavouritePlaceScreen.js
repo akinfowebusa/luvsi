@@ -51,7 +51,7 @@ const FavouritePlacesScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={24} color="#000" />
+          <Text style={styles.backArrow}>{"<"}</Text>
         </TouchableOpacity>
         <View style={{ flex: 1 }} />
         <TouchableOpacity onPress={() => navigation.navigate("PersonalityScreen")}>

@@ -16,7 +16,7 @@ const FindCrushScreen = () => {
         console.log("✅ City stored locally:", city);
 
         // ✅ Navigate to next screen
-        navigation.navigate("FavouritePlacesScreen", { userCity: city });
+        navigation.navigate("LocationPermissionScreen", { userCity: city });
       } catch (error) {
         console.error("❌ Storage Error:", error.message);
         Alert.alert("Error", "Something went wrong while saving your city.");
@@ -31,9 +31,9 @@ const FindCrushScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={24} color="#000" />
+           <Text style={styles.backArrow}>{"<"}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("FavouritePlacesScreen")}>
+        <TouchableOpacity onPress={() => navigation.navigate("LocationPermissionScreen")}>
           <Text style={styles.skip}>Skip</Text>
         </TouchableOpacity>
       </View>
